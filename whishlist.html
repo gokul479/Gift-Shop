@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist | Giftora</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      fontFamily: { sans:['Inter','sans-serif'], serif:['Playfair Display','serif'] },
+      colors: { 'deep-rose':'#8B3A4A','burgundy':'#5E2A3B','cream':'#FDF8F4','soft-pink':'#F7D8D8','lavender':'#E6E0F0','gold':'#C9A96E','charcoal':'#2D2A2A','dark-burgundy':'#3E1E2B' }
+    }}}
+  </script>
+  <style>
+    body { background:#FDF8F4; color:#2D2A2A; font-family:'Inter',sans-serif; transition:all .4s; }
+    body.dark { background:#1A1618; color:#F0EAE6; }
+    .glass-card { background:rgba(255,255,255,.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.6); }
+    .dark .glass-card { background:rgba(45,42,42,.6); border:1px solid rgba(255,255,255,.08); }
+    .navbar-scrolled { background:rgba(253,248,244,.85); backdrop-filter:blur(16px); box-shadow:0 8px 32px rgba(0,0,0,.06); }
+    .dark .navbar-scrolled { background:rgba(26,22,24,.9); }
+    .aspect-product { aspect-ratio:3/4; }
+    @keyframes heartBeat { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+    @keyframes cartBounce { 0%{transform:scale(1)} 30%{transform:scale(1.3)} 60%{transform:scale(.9)} 100%{transform:scale(1)} }
+    @keyframes toastIn { 0%{opacity:0;transform:translateX(40px)} 100%{opacity:1;transform:translateX(0)} }
+    @keyframes fadeUp { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+    .heart-btn.active i { animation:heartBeat .4s ease; }
+    .cart-bounce { animation:cartBounce .5s ease; }
+    .toast-enter { animation:toastIn .4s ease forwards; }
+    .confetti-piece { position:fixed; width:10px; height:10px; top:-10px; z-index:10000; pointer-events:none; animation:confettiFall linear forwards; }
+    @keyframes confettiFall { 0%{transform:translateY(0) rotate(0);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20" id="navbarInner">
+        <a href="index.html" class="flex items-center gap-2">
+          <i class="fas fa-gift text-2xl text-deep-rose dark:text-gold"></i>
+          <span class="text-xl font-serif font-bold text-deep-rose dark:text-gold">Giftora</span>
+        </a>
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="index.html" class="text-sm font-medium text-charcoal/80 dark:text-cream/80 hover:text-deep-rose">Home</a>
+          <a href="shop.html" class="text-sm font-medium text-charcoal/80 dark:text-cream/80 hover:text-deep-rose">Shop</a>
+          <a href="wishlist.html" class="text-sm font-medium text-deep-rose dark:text-gold">Wishlist</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="shop.html" class="p-2 text-charcoal/70 dark:text-cream/70"><i class="fas fa-search text-lg"></i></a>
+          <a href="wishlist.html" class="relative p-2 text-charcoal/70 dark:text-cream/70">
+            <i class="fas fa-heart text-lg"></i>
+            <span id="wishlistBadge" class="absolute -top-1 -right-1 bg-deep-rose text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center opacity-0">0</span>
+          </a>
+          <a href="checkout.html" class="relative p-2 text-charcoal/70 dark:text-cream/70">
+            <i class="fas fa-shopping-bag text-lg"></i>
+            <span id="cartBadge" class="absolute -top-1 -right-1 bg-deep-rose text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center opacity-0">0</span>
+          </a>
+          <button onclick="toggleTheme()" class="p-2 text-charcoal/70 dark:text-cream/70">
+            <i id="themeIcon" class="fas fa-moon text-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-[200] space-y-3"></div>
+
+  <main class="pt-32 pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10" style="animation:fadeUp .6s ease">
+        <nav class="text-xs text-charcoal/40 dark:text-cream/40 mb-3">
+          <a href="index.html" class="hover:text-deep-rose">Home</a> <span class="mx-1">/</span> <span>Wishlist</span>
+        </nav>
+        <h1 class="font-serif text-4xl sm:text-5xl text-charcoal dark:text-cream">My Wishlist</h1>
+        <p class="mt-3 text-charcoal/50 dark:text-cream/50">Your favorite gifts, all in one place.</p>
+      </div>
+
+      <div id="wishlistGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+
+      <div id="emptyState" class="hidden text-center py-24">
+        <div class="text-7xl mb-6">💝</div>
+        <h2 class="font-serif text-3xl text-charcoal dark:text-cream">No gifts saved yet.</h2>
+        <p class="mt-3 text-charcoal/50 dark:text-cream/50">Start adding gifts you love to your wishlist.</p>
+        <a href="shop.html" class="inline-block mt-6 px-8 py-3.5 rounded-full bg-gradient-to-r from-deep-rose to-burgundy text-white font-medium text-sm">Explore Gifts</a>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ============ DATA ============
+const products = [
+  { id:1, name:'Personalized Photo Frame', price:1299, originalPrice:1799, discount:28, rating:4.8, reviews:324, image:'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=800&fit=crop', badge:'BESTSELLER' },
+  { id:2, name:'Luxury Perfume Set', price:2499, originalPrice:3499, discount:29, rating:4.9, reviews:512, image:'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=800&fit=crop', badge:'NEW' },
+  { id:3, name:'Engraved Leather Wallet', price:899, originalPrice:1299, discount:31, rating:4.7, reviews:189, image:'https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&h=800&fit=crop', badge:'PERSONALIZED' },
+  { id:4, name:'Custom Name Necklace', price:1599, originalPrice:2199, discount:27, rating:4.9, reviews:678, image:'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=800&fit=crop', badge:'TRENDING' },
+  { id:5, name:'Gourmet Chocolate Box', price:699, originalPrice:999, discount:30, rating:4.6, reviews:245, image:'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=600&h=800&fit=crop', badge:'SALE' },
+  { id:6, name:'Teddy Bear with Roses', price:1199, originalPrice:1599, discount:25, rating:4.8, reviews:432, image:'https://images.unsplash.com/photo-1562040506-a9b32cb51b94?w=600&h=800&fit=crop', badge:'' },
+  { id:7, name:'Premium Gift Hamper', price:2999, originalPrice:3999, discount:25, rating:4.9, reviews:289, image:'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=800&fit=crop', badge:'LIMITED' },
+  { id:8, name:'Custom Photo Lamp', price:1899, originalPrice:2499, discount:24, rating:4.7, reviews:156, image:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=800&fit=crop', badge:'PERSONALIZED' },
+];
+
+// ============ STATE ============
+let cart = JSON.parse(localStorage.getItem('giftora_cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('giftora_wishlist')) || [];
+
+// ============ UTILS ============
+function formatPrice(p) { return '₹' + p.toLocaleString('en-IN'); }
+function showToast(msg, icon='🎁') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast-enter glass-card rounded-xl px-5 py-3.5 shadow-xl flex items-center gap-3 min-w-[280px]';
+  t.innerHTML = `<span class="text-lg">${icon}</span><span class="text-sm">${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2500);
+}
+function confetti() {
+  const colors = ['#8B3A4A','#C9A96E','#F7D8D8','#E6E0F0','#F7E7CE','#FFE5D9'];
+  for (let i=0;i<30;i++) {
+    const p = document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)];
+    p.style.width=Math.random()*8+5+'px'; p.style.height=Math.random()*8+5+'px';
+    p.style.animationDuration=Math.random()*2+2+'s';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),4000);
+  }
+}
+function updateBadges() {
+  const cb = document.getElementById('cartBadge');
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  if (count>0) { cb.textContent=count; cb.style.opacity='1'; } else cb.style.opacity='0';
+  const wb = document.getElementById('wishlistBadge');
+  if (wishlist.length>0) { wb.textContent=wishlist.length; wb.style.opacity='1'; } else wb.style.opacity='0';
+}
+function saveCart() { localStorage.setItem('giftora_cart', JSON.stringify(cart)); updateBadges(); }
+function saveWishlist() { localStorage.setItem('giftora_wishlist', JSON.stringify(wishlist)); updateBadges(); renderWishlist(); }
+
+// ============ THEME ============
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const d = document.body.classList.contains('dark');
+  document.getElementById('themeIcon').className = d?'fas fa-sun text-lg':'fas fa-moon text-lg';
+  localStorage.setItem('giftora_theme', d?'dark':'light');
+}
+if (localStorage.getItem('giftora_theme')==='dark') {
+  document.body.classList.add('dark');
+  document.getElementById('themeIcon').className = 'fas fa-sun text-lg';
+}
+
+// ============ ACTIONS ============
+function addToCart(id) {
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const ex = cart.find(i=>i.id===id);
+  if (ex) ex.qty++; else cart.push({...p, qty:1});
+  saveCart(); showToast('Added to cart 🎁','🎁');
+  if (cart.length===1) confetti();
+}
+function removeFromWishlist(id) {
+  wishlist = wishlist.filter(i=>i!==id);
+  saveWishlist(); showToast('Removed from wishlist','💔');
+}
+
+// ============ RENDER ============
+function renderWishlist() {
+  const grid = document.getElementById('wishlistGrid');
+  const empty = document.getElementById('emptyState');
+  if (wishlist.length===0) { grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  const items = products.filter(p=>wishlist.includes(p.id));
+  grid.innerHTML = items.map((p,i)=>`
+    <div class="group relative rounded-2xl overflow-hidden bg-white dark:bg-[#252122] shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5" style="animation:fadeUp .4s ease ${i*60}ms both">
+      <div class="relative aspect-product overflow-hidden">
+        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
+        <button onclick="removeFromWishlist(${p.id})" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center text-deep-rose">
+          <i class="fas fa-heart text-sm"></i>
+        </button>
+      </div>
+      <div class="p-3.5">
+        <h3 class="text-sm font-medium truncate">${p.name}</h3>
+        <div class="flex items-center gap-1 mt-1.5">
+          <span class="text-gold text-xs">★</span>
+          <span class="text-xs text-charcoal/50">${p.rating} (${p.reviews})</span>
+        </div>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-sm font-bold text-deep-rose dark:text-gold">${formatPrice(p.price)}</span>
+          <span class="text-xs line-through text-charcoal/30">${formatPrice(p.originalPrice)}</span>
+        </div>
+        <button onclick="addToCart(${p.id})" class="mt-3 w-full py-2.5 rounded-xl border border-deep-rose/20 text-deep-rose dark:text-gold text-xs font-medium hover:bg-deep-rose hover:text-white transition-all">Add to Cart</button>
+      </div>
+    </div>`).join('');
+}
+
+// ============ NAV SCROLL ============
+window.addEventListener('scroll', ()=>{
+  const n = document.getElementById('navbar'), i = document.getElementById('navbarInner');
+  if (window.scrollY>50) { n.classList.add('navbar-scrolled'); i.classList.remove('h-20'); i.classList.add('h-16'); }
+  else { n.classList.remove('navbar-scrolled'); i.classList.remove('h-16'); i.classList.add('h-20'); }
+});
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderWishlist();
+  updateBadges();
+});
+</script>
+</body>
+</html>
