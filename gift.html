@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gift Finder | Giftora</title>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  >
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          },
+
+          colors: {
+            'deep-rose': '#8B3A4A',
+            'burgundy': '#5E2A3B',
+            'cream': '#FDF8F4',
+            'soft-pink': '#F7D8D8',
+            'lavender': '#E6E0F0',
+            'gold': '#C9A96E',
+            'charcoal': '#2D2A2A',
+            'dark-burgundy': '#3E1E2B'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+
+    /* =========================
+       BASIC STYLES
+    ========================== */
+
+    body {
+      background: #FDF8F4;
+      color: #2D2A2A;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    body.dark {
+      background: #1A1618;
+      color: #F0EAE6;
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.6);
+    }
+
+    .dark .glass-card {
+      background: rgba(45,42,42,.6);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .navbar-scrolled {
+      background: rgba(253,248,244,.85);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.06);
+    }
+
+    .dark .navbar-scrolled {
+      background: rgba(26,22,24,.9);
+    }
+
+
+    /* =========================
+       FINDER ANIMATION
+    ========================== */
+
+    @keyframes slideInRight {
+
+      0% {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+    }
+
+    .finder-step {
+      display: none;
+    }
+
+    .finder-step.active {
+      display: block;
+      animation: slideInRight .5s ease forwards;
+    }
+
+    .progress-fill {
+      transition: width .4s ease;
+    }
+
+
+    /* =========================
+       FLOATING ANIMATION
+    ========================== */
+
+    @keyframes float {
+
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-15px);
+      }
+
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+
+    /* =========================
+       TOAST
+    ========================== */
+
+    @keyframes toastIn {
+
+      0% {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+    }
+
+    .toast-enter {
+      animation: toastIn .4s ease forwards;
+    }
+
+
+    /* =========================
+       CONFETTI
+    ========================== */
+
+    @keyframes confettiFall {
+
+      0% {
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+
+    }
+
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      z-index: 10000;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+
+
+    /* =========================
+       CART BOUNCE
+    ========================== */
+
+    @keyframes cartBounce {
+
+      0% {
+        transform: scale(1);
+      }
+
+      30% {
+        transform: scale(1.3);
+      }
+
+      60% {
+        transform: scale(.9);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+
+    }
+
+    .cart-bounce {
+      animation: cartBounce .5s ease;
+    }
+
+
+    /* =====================================================
+       🎁 GIFT RAIN
+    ===================================================== */
+
+    .gift-rain-container {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .falling-gift {
+      position: absolute;
+      top: -100px;
+
+      user-select: none;
+
+      filter:
+        drop-shadow(0 5px 8px rgba(0,0,0,.15));
+
+      animation-name: giftRain;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+
+    }
+
+    @keyframes giftRain {
+
+      0% {
+        transform:
+          translateY(-100px)
+          rotate(0deg)
+          translateX(0);
+
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      25% {
+        transform:
+          translateY(25vh)
+          rotate(90deg)
+          translateX(20px);
+      }
+
+      50% {
+        transform:
+          translateY(50vh)
+          rotate(180deg)
+          translateX(-20px);
+      }
+
+      75% {
+        transform:
+          translateY(75vh)
+          rotate(270deg)
+          translateX(20px);
+      }
+
+      100% {
+        transform:
+          translateY(115vh)
+          rotate(360deg)
+          translateX(-10px);
+
+        opacity: 0;
+      }
+
+    }
+
+
+    /* =====================================================
+       ✨ SPARKLES
+    ===================================================== */
+
+    .floating-sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+
+      text-shadow:
+        0 0 10px rgba(201,169,110,.8);
+
+      animation:
+        sparkleFloat 3s ease-in-out forwards;
+
+    }
+
+    @keyframes sparkleFloat {
+
+      0% {
+        opacity: 0;
+        transform:
+          scale(0)
+          translateY(20px)
+          rotate(0deg);
+      }
+
+      30% {
+        opacity: 1;
+        transform:
+          scale(1.3)
+          rotate(90deg);
+      }
+
+      70% {
+        opacity: 1;
+        transform:
+          scale(1)
+          translateY(-20px)
+          rotate(180deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform:
+          scale(0)
+          translateY(-50px)
+          rotate(360deg);
+      }
+
+    }
+
+
+    /* =====================================================
+       🎁 GIFT GLOW
+    ===================================================== */
+
+    .gift-glow {
+
+      animation:
+        giftGlow 1.5s ease-in-out infinite;
+
+    }
+
+    @keyframes giftGlow {
+
+      0%,100% {
+
+        filter:
+          drop-shadow(
+            0 0 0px
+            rgba(201,169,110,0)
+          );
+
+      }
+
+      50% {
+
+        filter:
+          drop-shadow(
+            0 0 18px
+            rgba(201,169,110,.8)
+          );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       ✨ RESULT CARD ANIMATION
+    ===================================================== */
+
+    @keyframes resultCard {
+
+      0% {
+        opacity: 0;
+        transform:
+          translateY(30px)
+          scale(.95);
+      }
+
+      100% {
+        opacity: 1;
+        transform:
+          translateY(0)
+          scale(1);
+      }
+
+    }
+
+    .result-card {
+      animation:
+        resultCard .6s ease forwards;
+    }
+
+
+    /* =====================================================
+       🎀 HOVER EFFECT
+    ===================================================== */
+
+    .gift-option {
+
+      transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+
+    }
+
+    .gift-option:hover {
+
+      transform:
+        translateY(-5px)
+        scale(1.02);
+
+      box-shadow:
+        0 12px 25px
+        rgba(139,58,74,.12);
+
+    }
+
+
+    /* =====================================================
+       🌸 HEART PARTICLE
+    ===================================================== */
+
+    .heart-particle {
+
+      position: fixed;
+
+      pointer-events: none;
+
+      z-index: 9997;
+
+      animation:
+        heartFloat 4s ease-out forwards;
+
+    }
+
+    @keyframes heartFloat {
+
+      0% {
+        opacity: 0;
+        transform:
+          translateY(30px)
+          scale(.5);
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform:
+          translateY(-150px)
+          scale(1.2)
+          rotate(20deg);
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <!-- =====================================================
+       🎁 GIFT RAIN CONTAINER
+  ====================================================== -->
+
+  <div
+    id="giftRainContainer"
+    class="gift-rain-container"
+  ></div>
+
+
+  <!-- =====================================================
+       NAVBAR
+  ====================================================== -->
+
+  <nav
+    id="navbar"
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+  >
+
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+
+      <div
+        class="flex items-center justify-between h-20"
+        id="navbarInner"
+      >
+
+        <!-- Logo -->
+
+        <a
+          href="index.html"
+          class="flex items-center gap-2"
+        >
+
+          <i
+            class="fas fa-gift text-2xl text-deep-rose dark:text-gold"
+          ></i>
+
+          <span
+            class="text-xl font-serif font-bold text-deep-rose dark:text-gold"
+          >
+            Giftora
+          </span>
+
+        </a>
+
+
+        <!-- Navigation -->
+
+        <div
+          class="hidden lg:flex items-center gap-8"
+        >
+
+          <a
+            href="index.html"
+            class="text-sm font-medium text-charcoal/80 dark:text-cream/80 hover:text-deep-rose"
+          >
+            Home
+          </a>
+
+          <a
+            href="shop.html"
+            class="text-sm font-medium text-charcoal/80 dark:text-cream/80 hover:text-deep-rose"
+          >
+            Shop
+          </a>
+
+          <a
+            href="giftfinder.html"
+            class="text-sm font-medium text-deep-rose dark:text-gold"
+          >
+            Gift Finder
+          </a>
+
+        </div>
+
+
+        <!-- Right Buttons -->
+
+        <div class="flex items-center gap-4">
+
+          <!-- Cart -->
+
+          <button
+            onclick="toggleCart()"
+            class="relative p-2 text-charcoal/70 dark:text-cream/70"
+          >
+
+            <i
+              class="fas fa-shopping-bag text-lg"
+            ></i>
+
+            <span
+              id="cartBadge"
+              class="absolute -top-1 -right-1 bg-deep-rose text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center opacity-0"
+            >
+              0
+            </span>
+
+          </button>
+
+
+          <!-- Theme -->
+
+          <button
+            onclick="toggleTheme()"
+            class="p-2 text-charcoal/70 dark:text-cream/70"
+          >
+
+            <i
+              id="themeIcon"
+              class="fas fa-moon text-lg"
+            ></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+
+  <!-- =====================================================
+       CART DRAWER
+  ====================================================== -->
+
+  <div
+    id="cartDrawer"
+    class="fixed top-0 right-0 h-full w-full sm:w-[420px] z-[90] translate-x-full transition-transform duration-500"
+  >
+
+    <div
+      class="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"
+      onclick="toggleCart()"
+    ></div>
+
+
+    <div
+      class="relative h-full bg-cream dark:bg-charcoal shadow-2xl flex flex-col"
+    >
+
+      <!-- Cart Header -->
+
+      <div
+        class="flex items-center justify-between p-6 border-b"
+      >
+
+        <h2
+          class="text-lg font-serif text-deep-rose dark:text-gold"
+        >
+          Your Gift Box
+        </h2>
+
+        <button onclick="toggleCart()">
+
+          <i
+            class="fas fa-times text-xl"
+          ></i>
+
+        </button>
+
+      </div>
+
+
+      <!-- Cart Items -->
+
+      <div
+        id="cartItems"
+        class="flex-1 overflow-y-auto p-6 space-y-4"
+      ></div>
+
+
+      <!-- Cart Footer -->
+
+      <div
+        id="cartFooter"
+        class="p-6 border-t hidden"
+      >
+
+        <div
+          class="flex justify-between text-sm mb-4"
+        >
+
+          <span>Subtotal</span>
+
+          <span
+            id="cartSubtotal"
+            class="font-semibold"
+          >
+            ₹0
+          </span>
+
+        </div>
+
+
+        <a
+          href="checkout.html"
+          class="block text-center w-full py-3.5 rounded-xl bg-gradient-to-r from-deep-rose to-burgundy text-white font-medium text-sm"
+        >
+          Checkout
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    id="toastContainer"
+    class="fixed bottom-6 right-6 z-[200] space-y-3"
+  ></div>
+
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main class="pt-32 pb-24">
+
+    <div
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+
+      <!-- Heading -->
+
+      <div class="text-center mb-12">
+
+        <span
+          class="text-xs font-medium tracking-[0.2em] uppercase text-deep-rose dark:text-gold"
+        >
+          Gift Finder
+        </span>
+
+        <h2
+          class="font-serif text-4xl sm:text-5xl mt-4 text-charcoal dark:text-cream"
+        >
+          Not Sure What to Gift?
+        </h2>
+
+        <p
+          class="mt-4 text-charcoal/50 dark:text-cream/50"
+        >
+          Tell us a little about them. We'll help you find something they'll love.
+        </p>
+
+      </div>
+
+
+
+      <!-- =====================================================
+           FINDER CARD
+      ====================================================== -->
+
+      <div
+        class="glass-card rounded-3xl p-8 sm:p-12 shadow-xl"
+        id="giftFinderContainer"
+      >
+
+        <!-- Progress -->
+
+        <div class="mb-8">
+
+          <div
+            class="flex justify-between text-xs text-charcoal/40 dark:text-cream/40 mb-2"
+          >
+
+            <span>
+              Question
+              <span id="finderStepNum">1</span>
+              of 5
+            </span>
+
+            <span id="finderProgressPercent">
+              0%
+            </span>
+
+          </div>
+
+
+          <div
+            class="w-full h-1.5 bg-charcoal/10 dark:bg-cream/10 rounded-full overflow-hidden"
+          >
+
+            <div
+              id="finderProgressBar"
+              class="h-full bg-gradient-to-r from-deep-rose to-gold rounded-full progress-fill"
+              style="width:0%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             QUESTIONS
+        ====================================================== -->
+
+        <div id="finderSteps">
+
+
+          <!-- STEP 1 -->
+
+          <div
+            class="finder-step active"
+            data-step="1"
+          >
+
+            <h3
+              class="font-serif text-2xl mb-6"
+            >
+              Who are you gifting?
+            </h3>
+
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 gap-3"
+              id="step1Options"
+            ></div>
+
+          </div>
+
+
+
+          <!-- STEP 2 -->
+
+          <div
+            class="finder-step"
+            data-step="2"
+          >
+
+            <h3
+              class="font-serif text-2xl mb-6"
+            >
+              What's the occasion?
+            </h3>
+
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 gap-3"
+              id="step2Options"
+            ></div>
+
+          </div>
+
+
+
+          <!-- STEP 3 -->
+
+          <div
+            class="finder-step"
+            data-step="3"
+          >
+
+            <h3
+              class="font-serif text-2xl mb-6"
+            >
+              What's your budget?
+            </h3>
+
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+              id="step3Options"
+            ></div>
+
+          </div>
+
+
+
+          <!-- STEP 4 -->
+
+          <div
+            class="finder-step"
+            data-step="4"
+          >
+
+            <h3
+              class="font-serif text-2xl mb-6"
+            >
+              What's their personality?
+            </h3>
+
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 gap-3"
+              id="step4Options"
+            ></div>
+
+          </div>
+
+
+
+          <!-- STEP 5 -->
+
+          <div
+            class="finder-step"
+            data-step="5"
+          >
+
+            <h3
+              class="font-serif text-2xl mb-6"
+            >
+              What are their interests?
+            </h3>
+
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 gap-3"
+              id="step5Options"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             NAVIGATION BUTTONS
+        ====================================================== -->
+
+        <div
+          class="flex justify-between mt-8"
+          id="finderNav"
+        >
+
+          <button
+            id="finderPrevBtn"
+            onclick="prevFinderStep()"
+            class="px-6 py-2.5 rounded-full border border-charcoal/20 text-sm disabled:opacity-30"
+            disabled
+          >
+            ← Back
+          </button>
+
+
+          <button
+            id="finderNextBtn"
+            onclick="nextFinderStep()"
+            class="px-8 py-2.5 rounded-full bg-gradient-to-r from-deep-rose to-burgundy text-white text-sm font-medium"
+          >
+            Next →
+          </button>
+
+        </div>
+
+
+
+        <!-- RESULT -->
+
+        <div
+          id="finderResult"
+          class="hidden"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script>
+
+    /* =====================================================
+       PRODUCT DATA
+    ====================================================== */
+
+    const products = [
+
+      {
+        id: 1,
+        name: 'Personalized Photo Frame',
+        price: 1299,
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=800&fit=crop'
+      },
+
+      {
+        id: 2,
+        name: 'Luxury Perfume Set',
+        price: 2499,
+        image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=800&fit=crop'
+      },
+
+      {
+        id: 3,
+        name: 'Engraved Leather Wallet',
+        price: 899,
+        image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&h=800&fit=crop'
+      },
+
+      {
+        id: 4,
+        name: 'Custom Name Necklace',
+        price: 1599,
+        image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=800&fit=crop'
+      },
+
+      {
+        id: 5,
+        name: 'Gourmet Chocolate Box',
+        price: 699,
+        image: 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=600&h=800&fit=crop'
+      },
+
+      {
+        id: 6,
+        name: 'Teddy Bear with Roses',
+        price: 1199,
+        image: 'https://images.unsplash.com/photo-1562040506-a9b32cb51b94?w=600&h=800&fit=crop'
+      }
+
+    ];
+
+
+
+    /* =====================================================
+       FINDER QUESTIONS
+    ====================================================== */
+
+    const finderSteps = {
+
+      1: {
+        options: [
+          'Partner',
+          'Mother',
+          'Father',
+          'Friend',
+          'Brother',
+          'Sister',
+          'Child',
+          'Colleague',
+          'Teacher'
+        ]
+      },
+
+      2: {
+        options: [
+          'Birthday',
+          'Anniversary',
+          "Valentine's Day",
+          'Wedding',
+          'Graduation',
+          'Celebration',
+          'Just Because'
+        ]
+      },
+
+      3: {
+        options: [
+          'Under ₹500',
+          '₹500–₹1,000',
+          '₹1,000–₹2,500',
+          '₹2,500–₹5,000',
+          '₹5,000+'
+        ]
+      },
+
+      4: {
+        options: [
+          'Romantic',
+          'Funny',
+          'Elegant',
+          'Adventurous',
+          'Creative',
+          'Emotional',
+          'Minimalist',
+          'Luxury Lover'
+        ]
+      },
+
+      5: {
+        options: [
+          'Fashion',
+          'Music',
+          'Travel',
+          'Fitness',
+          'Gaming',
+          'Books',
+          'Food',
+          'Photography',
+          'Technology',
+          'Art'
+        ]
+      }
+
+    };
+
+
+
+    /* =====================================================
+       STATE
+    ====================================================== */
+
+    let cart =
+      JSON.parse(
+        localStorage.getItem('giftora_cart')
+      ) || [];
+
+    let currentStep = 1;
+
+    let answers = {};
+
+
+
+    /* =====================================================
+       UTILITY FUNCTIONS
+    ====================================================== */
+
+    function formatPrice(price) {
+
+      return '₹' +
+        price.toLocaleString('en-IN');
+
+    }
+
+
+
+    /* =====================================================
+       TOAST
+    ====================================================== */
+
+    function showToast(
+      msg,
+      icon = '🎁'
+    ) {
+
+      const container =
+        document.getElementById(
+          'toastContainer'
+        );
+
+      const toast =
+        document.createElement('div');
+
+      toast.className =
+        'toast-enter glass-card rounded-xl px-5 py-3.5 shadow-xl flex items-center gap-3 min-w-[280px]';
+
+      toast.innerHTML = `
+
+        <span class="text-lg">
+          ${icon}
+        </span>
+
+        <span class="text-sm">
+          ${msg}
+        </span>
+
+      `;
+
+      container.appendChild(toast);
+
+
+      setTimeout(() => {
+
+        toast.style.opacity = '0';
+
+        setTimeout(() => {
+
+          toast.remove();
+
+        }, 300);
+
+      }, 2500);
+
+    }
+
+
+
+    /* =====================================================
+       🎉 CONFETTI
+    ====================================================== */
+
+    function confetti() {
+
+      const colors = [
+
+        '#8B3A4A',
+        '#C9A96E',
+        '#F7D8D8',
+        '#E6E0F0',
+        '#F7E7CE',
+        '#FFE5D9'
+
+      ];
+
+
+      for (
+        let i = 0;
+        i < 60;
+        i++
+      ) {
+
+        const piece =
+          document.createElement('div');
+
+        piece.className =
+          'confetti-piece';
+
+        piece.style.left =
+          Math.random() * 100 + 'vw';
+
+        piece.style.backgroundColor =
+          colors[
+            Math.floor(
+              Math.random() * colors.length
+            )
+          ];
+
+        piece.style.width =
+          Math.random() * 8 + 5 + 'px';
+
+        piece.style.height =
+          Math.random() * 8 + 5 + 'px';
+
+        piece.style.animationDuration =
+          Math.random() * 2 + 2 + 's';
+
+        document.body.appendChild(piece);
+
+
+        setTimeout(() => {
+
+          piece.remove();
+
+        }, 4500);
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       🎁 CREATE FALLING GIFT
+    ====================================================== */
+
+    const giftEmojis = [
+
+      '🎁',
+      '🎀',
+      '💝',
+      '💖',
+      '✨',
+      '🌸',
+      '🎉',
+      '💐',
+      '🧸',
+      '💎'
+
+    ];
+
+
+    function createFallingGift() {
+
+      const container =
+        document.getElementById(
+          'giftRainContainer'
+        );
+
+      const gift =
+        document.createElement('div');
+
+      gift.className =
+        'falling-gift';
+
+      gift.textContent =
+        giftEmojis[
+          Math.floor(
+            Math.random() *
+            giftEmojis.length
+          )
+        ];
+
+
+      /* Random position */
+
+      gift.style.left =
+        Math.random() * 100 + 'vw';
+
+
+      /* Random size */
+
+      const size =
+        Math.random() * 20 + 20;
+
+      gift.style.fontSize =
+        size + 'px';
+
+
+      /* Random speed */
+
+      const duration =
+        Math.random() * 3 + 4;
+
+      gift.style.animationDuration =
+        duration + 's';
+
+
+      /* Random horizontal movement */
+
+      gift.style.marginLeft =
+        (Math.random() * 50 - 25) + 'px';
+
+
+      container.appendChild(gift);
+
+
+      setTimeout(() => {
+
+        gift.remove();
+
+      }, (duration + 1) * 1000);
+
+    }
+
+
+
+    /* =====================================================
+       🎁 START LIGHT GIFT RAIN
+    ====================================================== */
+
+    function startGiftRain() {
+
+      setInterval(() => {
+
+        createFallingGift();
+
+      }, 900);
+
+    }
+
+
+
+    /* =====================================================
+       ✨ SPARKLES
+    ====================================================== */
+
+    function createSparkle() {
+
+      const sparkle =
+        document.createElement('div');
+
+      sparkle.className =
+        'floating-sparkle';
+
+      sparkle.textContent =
+        Math.random() > .5
+          ? '✨'
+          : '✦';
+
+
+      sparkle.style.left =
+        Math.random() * 100 + 'vw';
+
+      sparkle.style.top =
+        Math.random() * 100 + 'vh';
+
+      sparkle.style.fontSize =
+        Math.random() * 15 + 10 + 'px';
+
+
+      document.body.appendChild(
+        sparkle
+      );
+
+
+      setTimeout(() => {
+
+        sparkle.remove();
+
+      }, 3000);
+
+    }
+
+
+
+    function startSparkles() {
+
+      setInterval(() => {
+
+        createSparkle();
+
+      }, 1200);
+
+    }
+
+
+
+    /* =====================================================
+       💗 HEART PARTICLES
+    ====================================================== */
+
+    function createHeart() {
+
+      const heart =
+        document.createElement('div');
+
+      heart.className =
+        'heart-particle';
+
+      heart.textContent =
+        Math.random() > .5
+          ? '💗'
+          : '💖';
+
+
+      heart.style.left =
+        Math.random() * 100 + 'vw';
+
+      heart.style.top =
+        Math.random() * 100 + 'vh';
+
+      heart.style.fontSize =
+        Math.random() * 12 + 14 + 'px';
+
+
+      document.body.appendChild(
+        heart
+      );
+
+
+      setTimeout(() => {
+
+        heart.remove();
+
+      }, 4000);
+
+    }
+
+
+
+    /* =====================================================
+       🎉 FULL GIFT CELEBRATION
+    ====================================================== */
+
+    function giftCelebration() {
+
+      /* Heavy gift rain */
+
+      for (
+        let i = 0;
+        i < 35;
+        i++
+      ) {
+
+        setTimeout(() => {
+
+          createFallingGift();
+
+        }, i * 100);
+
+      }
+
+
+      /* Sparkles */
+
+      for (
+        let i = 0;
+        i < 25;
+        i++
+      ) {
+
+        setTimeout(() => {
+
+          createSparkle();
+
+        }, i * 120);
+
+      }
+
+
+      /* Hearts */
+
+      for (
+        let i = 0;
+        i < 15;
+        i++
+      ) {
+
+        setTimeout(() => {
+
+          createHeart();
+
+        }, i * 150);
+
+      }
+
+
+      /* Confetti */
+
+      confetti();
+
+    }
+
+
+
+    /* =====================================================
+       CART BADGE
+    ====================================================== */
+
+    function updateBadges() {
+
+      const badge =
+        document.getElementById(
+          'cartBadge'
+        );
+
+      const count =
+        cart.reduce(
+          (sum, item) =>
+            sum + item.qty,
+          0
+        );
+
+
+      if (count > 0) {
+
+        badge.textContent =
+          count;
+
+        badge.style.opacity =
+          '1';
+
+      } else {
+
+        badge.style.opacity =
+          '0';
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       SAVE CART
+    ====================================================== */
+
+    function saveCart() {
+
+      localStorage.setItem(
+        'giftora_cart',
+        JSON.stringify(cart)
+      );
+
+      updateBadges();
+
+      renderCart();
+
+    }
+
+
+
+    /* =====================================================
+       THEME
+    ====================================================== */
+
+    function toggleTheme() {
+
+      document.body.classList.toggle(
+        'dark'
+      );
+
+      const dark =
+        document.body.classList.contains(
+          'dark'
+        );
+
+
+      document.getElementById(
+        'themeIcon'
+      ).className =
+
+        dark
+          ? 'fas fa-sun text-lg'
+          : 'fas fa-moon text-lg';
+
+
+      localStorage.setItem(
+        'giftora_theme',
+        dark
+          ? 'dark'
+          : 'light'
+      );
+
+    }
+
+
+
+    /* Load saved theme */
+
+    if (
+      localStorage.getItem(
+        'giftora_theme'
+      ) === 'dark'
+    ) {
+
+      document.body.classList.add(
+        'dark'
+      );
+
+      document.getElementById(
+        'themeIcon'
+      ).className =
+        'fas fa-sun text-lg';
+
+    }
+
+
+
+    /* =====================================================
+       CART DRAWER
+    ====================================================== */
+
+    function toggleCart() {
+
+      document
+        .getElementById('cartDrawer')
+        .classList
+        .toggle(
+          'translate-x-full'
+        );
+
+    }
+
+
+
+    /* =====================================================
+       ADD TO CART
+    ====================================================== */
+
+    function addToCart(id) {
+
+      const product =
+        products.find(
+          product =>
+            product.id === id
+        );
+
+
+      if (!product)
+        return;
+
+
+      const existing =
+        cart.find(
+          item =>
+            item.id === id
+        );
+
+
+      if (existing) {
+
+        existing.qty++;
+
+      } else {
+
+        cart.push({
+          ...product,
+          qty: 1
+        });
+
+      }
+
+
+      saveCart();
+
+
+      showToast(
+        'Added to your gift box!',
+        '🎁'
+      );
+
+
+      /* Cart bounce */
+
+      const badge =
+        document.getElementById(
+          'cartBadge'
+        );
+
+      badge.classList.remove(
+        'cart-bounce'
+      );
+
+      void badge.offsetWidth;
+
+      badge.classList.add(
+        'cart-bounce'
+      );
+
+
+      /* Celebration */
+
+      if (cart.length === 1) {
+
+        giftCelebration();
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       RENDER CART
+    ====================================================== */
+
+    function renderCart() {
+
+      const container =
+        document.getElementById(
+          'cartItems'
+        );
+
+      const footer =
+        document.getElementById(
+          'cartFooter'
+        );
+
+
+      if (
+        cart.length === 0
+      ) {
+
+        container.innerHTML = `
+
+          <div class="text-center py-16">
+
+            <i
+              class="fas fa-gift text-5xl text-charcoal/20 mb-4"
+            ></i>
+
+            <p class="text-charcoal/50">
+              Your gift box is waiting.
+            </p>
+
+          </div>
+
+        `;
+
+        footer.classList.add(
+          'hidden'
+        );
+
+        return;
+
+      }
+
+
+      footer.classList.remove(
+        'hidden'
+      );
+
+
+      container.innerHTML =
+        cart.map(
+          item => `
+
+          <div class="flex gap-4">
+
+            <div
+              class="w-20 h-24 rounded-xl overflow-hidden"
+            >
+
+              <img
+                src="${item.image}"
+                class="w-full h-full object-cover"
+              >
+
+            </div>
+
+
+            <div class="flex-1">
+
+              <h4
+                class="text-sm font-medium truncate"
+              >
+                ${item.name}
+              </h4>
+
+              <p
+                class="text-xs text-charcoal/50 mt-0.5"
+              >
+                ${formatPrice(item.price)}
+              </p>
+
+              <p class="text-xs mt-2">
+                Qty: ${item.qty}
+              </p>
+
+            </div>
+
+          </div>
+
+        `
+        ).join('');
+
+
+      const subtotal =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            item.price *
+            item.qty,
+          0
+        );
+
+
+      document.getElementById(
+        'cartSubtotal'
+      ).textContent =
+        formatPrice(subtotal);
+
+    }
+
+
+
+    /* =====================================================
+       RENDER FINDER STEP
+    ====================================================== */
+
+    function renderStep() {
+
+      document
+        .querySelectorAll(
+          '.finder-step'
+        )
+        .forEach(
+          element =>
+            element.classList.remove(
+              'active'
+            )
+        );
+
+
+      document
+        .querySelector(
+          `.finder-step[data-step="${currentStep}"]`
+        )
+        .classList.add(
+          'active'
+        );
+
+
+      const options =
+        finderSteps[
+          currentStep
+        ].options;
+
+
+      document.getElementById(
+        'step' +
+        currentStep +
+        'Options'
+      ).innerHTML =
+
+        options.map(
+          option => `
+
+          <button
+            onclick="selectOption('${option}')"
+
+            class="
+              gift-option
+              px-4
+              py-3
+              rounded-xl
+              border
+              border-charcoal/10
+              dark:border-cream/10
+              bg-white/50
+              dark:bg-charcoal/50
+              text-sm
+              hover:border-deep-rose
+              dark:hover:border-gold
+              transition-all
+              text-left
+
+              ${
+                answers[currentStep] === option
+                  ? 'border-deep-rose dark:border-gold bg-deep-rose/5'
+                  : ''
+              }
+            "
+          >
+
+            ${option}
+
+          </button>
+
+        `
+        ).join('');
+
+
+      /* Progress */
+
+      const percent =
+        ((currentStep - 1) / 5) *
+        100;
+
+
+      document.getElementById(
+        'finderProgressBar'
+      ).style.width =
+        percent + '%';
+
+
+      document.getElementById(
+        'finderStepNum'
+      ).textContent =
+        currentStep;
+
+
+      document.getElementById(
+        'finderProgressPercent'
+      ).textContent =
+        Math.round(percent) + '%';
+
+
+      document.getElementById(
+        'finderPrevBtn'
+      ).disabled =
+        currentStep === 1;
+
+
+      document.getElementById(
+        'finderNextBtn'
+      ).textContent =
+        currentStep === 5
+          ? 'See Results ✨'
+          : 'Next →';
+
+    }
+
+
+
+    /* =====================================================
+       SELECT OPTION
+    ====================================================== */
+
+    function selectOption(value) {
+
+      answers[currentStep] =
+        value;
+
+
+      renderStep();
+
+    }
+
+
+
+    /* =====================================================
+       NEXT
+    ====================================================== */
+
+    function nextFinderStep() {
+
+      if (
+        !answers[currentStep]
+      ) {
+
+        showToast(
+          'Please select an option',
+          '👆'
+        );
+
+        return;
+
+      }
+
+
+      if (
+        currentStep < 5
+      ) {
+
+        currentStep++;
+
+        renderStep();
+
+      } else {
+
+        showResults();
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       PREVIOUS
+    ====================================================== */
+
+    function prevFinderStep() {
+
+      if (
+        currentStep > 1
+      ) {
+
+        currentStep--;
+
+        renderStep();
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       SHOW RESULTS
+    ====================================================== */
+
+    function showResults() {
+
+      document.getElementById(
+        'finderSteps'
+      ).style.display =
+        'none';
+
+
+      document.getElementById(
+        'finderNav'
+      ).style.display =
+        'none';
+
+
+      const result =
+        document.getElementById(
+          'finderResult'
+        );
+
+
+      result.classList.remove(
+        'hidden'
+      );
+
+
+      result.innerHTML = `
+
+        <div
+          class="text-center py-12"
+        >
+
+          <div
+            class="text-6xl mb-5 animate-float gift-glow"
+          >
+            🎁
+          </div>
+
+          <h3
+            class="font-serif text-2xl"
+          >
+            Finding something special...
+          </h3>
+
+          <p
+            class="text-sm text-charcoal/50 mt-2"
+          >
+            ✨ Creating your perfect gift list...
+          </p>
+
+        </div>
+
+      `;
+
+
+      /* Small delay before results */
+
+      setTimeout(() => {
+
+        const recommendations =
+          products.slice(
+            0,
+            4
+          );
+
+
+        result.innerHTML = `
+
+          <div
+            class="text-center"
+          >
+
+            <!-- Result Icon -->
+
+            <div
+              class="
+                text-6xl
+                mb-5
+                gift-glow
+                animate-float
+              "
+            >
+              🎁
+            </div>
+
+
+            <h3
+              class="font-serif text-2xl"
+            >
+              Here are some gifts we think they'll love.
+            </h3>
+
+
+            <p
+              class="text-sm text-charcoal/50 mt-2"
+            >
+              Based on your preferences ✨
+            </p>
+
+
+            <!-- Products -->
+
+            <div
+              class="
+                grid
+                grid-cols-2
+                gap-4
+                mt-8
+              "
+            >
+
+              ${
+                recommendations
+                  .map(
+                    product => `
+
+                    <div
+                      class="
+                        result-card
+                        glass-card
+                        rounded-2xl
+                        p-3
+                        text-left
+                      "
+                    >
+
+                      <div
+                        class="
+                          rounded-xl
+                          overflow-hidden
+                          aspect-square
+                        "
+                      >
+
+                        <img
+                          src="${product.image}"
+                          class="
+                            w-full
+                            h-full
+                            object-cover
+                            transition
+                            duration-500
+                            hover:scale-110
+                          "
+                        >
+
+                      </div>
+
+
+                      <h4
+                        class="
+                          text-sm
+                          font-medium
+                          mt-2
+                          truncate
+                        "
+                      >
+                        ${product.name}
+                      </h4>
+
+
+                      <p
+                        class="
+                          text-sm
+                          font-bold
+                          text-deep-rose
+                          dark:text-gold
+                          mt-1
+                        "
+                      >
+                        ${formatPrice(product.price)}
+                      </p>
+
+
+                      <button
+                        onclick="addToCart(${product.id})"
+                        class="
+                          mt-2
+                          w-full
+                          py-2
+                          rounded-lg
+                          border
+                          border-deep-rose/20
+                          text-deep-rose
+                          text-xs
+                          hover:bg-deep-rose
+                          hover:text-white
+                          transition
+                        "
+                      >
+                        Add to Cart
+                      </button>
+
+                    </div>
+
+                  `
+                  )
+                  .join('')
+              }
+
+            </div>
+
+
+            <!-- Start Over -->
+
+            <button
+              onclick="resetFinder()"
+              class="
+                mt-8
+                text-deep-rose
+                dark:text-gold
+                text-sm
+                font-medium
+                hover:underline
+              "
+            >
+              ↻ Start over
+            </button>
+
+          </div>
+
+        `;
+
+
+        /* 🎉 Celebration */
+
+        giftCelebration();
+
+      }, 1500);
+
+    }
+
+
+
+    /* =====================================================
+       RESET FINDER
+    ====================================================== */
+
+    function resetFinder() {
+
+      currentStep = 1;
+
+      answers = {};
+
+
+      document.getElementById(
+        'finderSteps'
+      ).style.display =
+        'block';
+
+
+      document.getElementById(
+        'finderNav'
+      ).style.display =
+        'flex';
+
+
+      document.getElementById(
+        'finderResult'
+      ).classList.add(
+        'hidden'
+      );
+
+
+      renderStep();
+
+    }
+
+
+
+    /* =====================================================
+       NAVBAR SCROLL
+    ====================================================== */
+
+    window.addEventListener(
+      'scroll',
+      () => {
+
+        const navbar =
+          document.getElementById(
+            'navbar'
+          );
+
+        const inner =
+          document.getElementById(
+            'navbarInner'
+          );
+
+
+        if (
+          window.scrollY > 50
+        ) {
+
+          navbar.classList.add(
+            'navbar-scrolled'
+          );
+
+          inner.classList.remove(
+            'h-20'
+          );
+
+          inner.classList.add(
+            'h-16'
+          );
+
+        } else {
+
+          navbar.classList.remove(
+            'navbar-scrolled'
+          );
+
+          inner.classList.remove(
+            'h-16'
+          );
+
+          inner.classList.add(
+            'h-20'
+          );
+
+        }
+
+      }
+    );
+
+
+
+    /* =====================================================
+       INITIALIZATION
+    ====================================================== */
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      () => {
+
+        renderStep();
+
+        renderCart();
+
+        updateBadges();
+
+        /*
+          Light background animation.
+          Gifts will gently fall continuously.
+        */
+
+        startGiftRain();
+
+        /*
+          Small sparkle particles.
+        */
+
+        startSparkles();
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
